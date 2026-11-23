@@ -137,20 +137,20 @@ public class UsuarioService {
 
         // Busca al usuario
         Usuario usuario = usuarioRepository.findByCorreo(correoNormalizado)
-                .orElseThrow(() -> new IllegalArgumentException(
+                .orElseThrow(() -> new com.mastermartini.backend.exception.CredencialesInvalidasException(
                         "Correo o contraseña incorrectos."
                 ));
 
         // Verifica que la cuenta esté activa
         if (usuario.getActivo() == null || !usuario.getActivo()) {
-            throw new IllegalArgumentException(
+            throw new com.mastermartini.backend.exception.CredencialesInvalidasException(
                     "La cuenta de usuario está desactivada."
             );
         }
 
         // Comprueba la contraseña
         if (!passwordEncoder.matches(password, usuario.getPasswordHash())) {
-            throw new IllegalArgumentException(
+            throw new com.mastermartini.backend.exception.CredencialesInvalidasException(
                     "Correo o contraseña incorrectos."
             );
         }

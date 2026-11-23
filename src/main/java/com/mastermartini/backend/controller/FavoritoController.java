@@ -16,11 +16,18 @@ import java.util.List;
 @RequestMapping("/api/favoritos")
 @CrossOrigin(origins = "*")
 public class FavoritoController {
+    private void verificarUsuario(Long idUsuario) {
+        var autenticacion = org.springframework.security.core.context.SecurityContextHolder.getContext().getAuthentication();
+        var esperado = usuarioService.buscarPorCorreo(autenticacion.getName()).getIdUsuario();
+        if(!esperado.equals(idUsuario)) throw new org.springframework.security.access.AccessDeniedException("No puedes acceder a los favoritos de otro usuario");
+    }
+    private final com.mastermartini.backend.service.UsuarioService usuarioService;
 
     private final FavoritoService favoritoService;
 
-    public FavoritoController(FavoritoService favoritoService) {
+    public FavoritoController(FavoritoService favoritoService, com.mastermartini.backend.service.UsuarioService usuarioService) {
         this.favoritoService = favoritoService;
+        this.usuarioService = usuarioService;
     }
 
     // Agregar contenido a favoritos
@@ -30,6 +37,7 @@ public class FavoritoController {
             @Valid @RequestBody FavoritoRequest request
     ) {
 
+        verificarUsuario(idUsuario);
         Favorito favorito = favoritoService.agregarFavorito(
                 idUsuario,
                 request.getIdContenido()
@@ -46,6 +54,7 @@ public class FavoritoController {
             @PathVariable Long idUsuario
     ) {
 
+        verificarUsuario(idUsuario);
         List<FavoritoResponse> respuesta = favoritoService
                 .listarFavoritos(idUsuario)
                 .stream()
@@ -62,6 +71,7 @@ public class FavoritoController {
             @PathVariable Integer idContenido
     ) {
 
+        verificarUsuario(idUsuario);
         favoritoService.eliminarFavorito(idUsuario, idContenido);
 
         return ResponseEntity.noContent().build();

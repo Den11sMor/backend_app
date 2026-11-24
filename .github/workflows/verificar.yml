@@ -14,7 +14,8 @@ jobs:
           distribution: temurin
           java-version: '21'
           cache: maven
-      - run: chmod +x mvnw && ./mvnw -B verify
+      # El runner ya incluye Maven; evita descargarlo otra vez con el wrapper.
+      - run: mvn -B verify
       - uses: actions/upload-artifact@v4
         if: always()
         with:

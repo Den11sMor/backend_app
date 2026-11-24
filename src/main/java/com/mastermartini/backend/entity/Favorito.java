@@ -12,12 +12,12 @@ public class Favorito {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("usuarioId")
-    @JoinColumn(name = "usuarioId", nullable = false)
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @MapsId("contenidoId")
-    @JoinColumn(name = "contenidoId", nullable = false)
+    @JoinColumn(name = "contenido_id", nullable = false)
     private Contenido contenido;
 
     public Favorito() {

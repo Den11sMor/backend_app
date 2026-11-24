@@ -5,22 +5,26 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "contenidos")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "tipo", discriminatorType = DiscriminatorType.STRING)
+@DiscriminatorValue("Contenido")
 public class Contenido {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
 
-    @Column(name = "titulo", nullable = false, length = 150)
+    @Column(name = "titulo", nullable = false, length = 160)
     private String titulo;
 
-    @Column(name = "tipo", nullable = false, length = 50)
+    @Column(name = "tipo", nullable = false, length = 50, insertable = false, updatable = false)
     private String tipo;
 
     @Column(name = "categoria", nullable = false, length = 100)
     private String categoria;
 
-    @Column(name = "duracion", nullable = false, length = 50)
+    @Column(name = "duracion", nullable = false, length = 80)
     private String duracion;
 
     @Column(name = "descripcion", nullable = false, columnDefinition = "TEXT")
@@ -28,6 +32,12 @@ public class Contenido {
 
     @Column(name = "detalle", nullable = false, columnDefinition = "TEXT")
     private String detalle;
+
+    @Column(name = "video_url", length = 2000)
+    private String videoUrl = "";
+
+    public String getVideoUrl() { return videoUrl; }
+    public void setVideoUrl(String videoUrl) { this.videoUrl = videoUrl; }
 
     public Contenido() {
     }

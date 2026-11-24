@@ -93,20 +93,20 @@ class UsuarioServiceTest {
 
     @Test void iniciarSesionRechazaUsuarioInexistente() {
         when(usuarioRepository.findByCorreo("ana@test.com")).thenReturn(Optional.empty());
-        assertThrows(IllegalArgumentException.class, () -> service.iniciarSesion("ana@test.com", "secreto"));
+        assertThrows(com.mastermartini.backend.exception.CredencialesInvalidasException.class, () -> service.iniciarSesion("ana@test.com", "secreto"));
     }
 
     @Test void iniciarSesionRechazaCuentaDesactivada() {
         Usuario u = new Usuario(); u.setActivo(false); u.setPasswordHash("hash");
         when(usuarioRepository.findByCorreo("ana@test.com")).thenReturn(Optional.of(u));
-        assertThrows(IllegalArgumentException.class, () -> service.iniciarSesion("ana@test.com", "secreto"));
+        assertThrows(com.mastermartini.backend.exception.CredencialesInvalidasException.class, () -> service.iniciarSesion("ana@test.com", "secreto"));
     }
 
     @Test void iniciarSesionRechazaPasswordIncorrecto() {
         Usuario u = new Usuario(); u.setActivo(true); u.setPasswordHash("hash");
         when(usuarioRepository.findByCorreo("ana@test.com")).thenReturn(Optional.of(u));
         when(passwordEncoder.matches("mala", "hash")).thenReturn(false);
-        assertThrows(IllegalArgumentException.class, () -> service.iniciarSesion("ana@test.com", "mala"));
+        assertThrows(com.mastermartini.backend.exception.CredencialesInvalidasException.class, () -> service.iniciarSesion("ana@test.com", "mala"));
     }
 
     @Test void buscarPorCorreoYListarUsuarios() {

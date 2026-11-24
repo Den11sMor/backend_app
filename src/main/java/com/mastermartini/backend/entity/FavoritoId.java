@@ -10,10 +10,10 @@ import java.util.Objects;
 @Embeddable
 public class FavoritoId implements Serializable {
 
-    @Column(name = "usuarioId")
+    @Column(name = "usuario_id")
     private Long usuarioId;
 
-    @Column(name = "contenidoId")
+    @Column(name = "contenido_id")
     private Integer contenidoId;
 
     public FavoritoId() {

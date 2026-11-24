@@ -47,7 +47,7 @@ public class Usuario {
 
     // Fecha de registro.
     // MySQL asigna automáticamente la fecha de creación.
-    @Column(name = "fecha_registro", insertable = false, updatable = false)
+    @Column(name = "fecha_registro", columnDefinition="TIMESTAMP DEFAULT CURRENT_TIMESTAMP", insertable = false, updatable = false)
     private LocalDateTime fechaRegistro;
 
     // Indica si la cuenta está activa.

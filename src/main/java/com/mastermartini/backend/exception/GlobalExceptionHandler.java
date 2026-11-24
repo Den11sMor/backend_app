@@ -16,28 +16,27 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 // Clase encargada de manejar los errores de toda la API.
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    @ExceptionHandler(CredencialesInvalidasException.class)
+    public ResponseEntity<?> credenciales(CredencialesInvalidasException e) {
+        return ResponseEntity.status(401).body(java.util.Map.of("mensaje", "Correo o contraseña incorrectos"));
+    }
+
+    @ExceptionHandler(com.mastermartini.backend.shared.NoEncontradoException.class)
+    public ResponseEntity<?> noEncontrado(com.mastermartini.backend.shared.NoEncontradoException e) {
+        return ResponseEntity.status(404).body(java.util.Map.of("mensaje", e.getMessage()));
+    }
+    @ExceptionHandler(org.springframework.http.converter.HttpMessageNotReadableException.class)
+    public ResponseEntity<?> jsonInvalido() {
+        return ResponseEntity.badRequest().body(java.util.Map.of("mensaje", "El cuerpo JSON no es válido"));
+    }
+
 
     // Maneja los errores de validación de los DTO.
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> manejarValidaciones(
-            MethodArgumentNotValidException exception) {
-
-        // Obtiene el primer mensaje de validación.
-        String mensaje = exception.getBindingResult()
-                .getFieldErrors()
-                .stream()
-                .findFirst()
-                .map(error -> error.getDefaultMessage())
-                .orElse("Los datos enviados no son válidos.");
-
-        ErrorResponse respuesta = new ErrorResponse(
-                400,
-                mensaje
-        );
-
-        return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
-                .body(respuesta);
+    public ResponseEntity<?> manejarValidaciones(MethodArgumentNotValidException exception) {
+        java.util.Map<String,String> errores = new java.util.LinkedHashMap<>();
+        exception.getBindingResult().getFieldErrors().forEach(e -> errores.put(e.getField(),e.getDefaultMessage()));
+        return ResponseEntity.badRequest().body(java.util.Map.of("mensaje","Revisa los campos","errores",errores));
     }
 
     // Un correo duplicado es un conflicto, no un error interno.
@@ -62,7 +61,7 @@ public class GlobalExceptionHandler {
 
         ErrorResponse respuesta = new ErrorResponse(
                 HttpStatus.CONFLICT.value(),
-                "El correo electrónico ya está registrado."
+                "No se pudieron guardar los datos por un conflicto de integridad."
         );
 
         return ResponseEntity
@@ -84,6 +83,9 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .body(respuesta);
     }
+
+    @ExceptionHandler(org.springframework.security.access.AccessDeniedException.class)
+    public ResponseEntity<?> prohibido() { return ResponseEntity.status(403).body(java.util.Map.of("mensaje","Acceso no permitido")); }
 
     // Maneja errores inesperados del servidor.
     @ExceptionHandler(Exception.class)
